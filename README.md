@@ -1,6 +1,6 @@
 # Music Player
 
-A simple, responsive YouTube playlist player built with a dependency-free Node.js backend and browser frontend.
+A simple, responsive YouTube playlist player built with a dependency-free Node.js backend and browser frontend. The player screen uses the supplied music background and control icons; a separate playlist screen opens from the playlist button and returns to the player with Back.
 
 ## Run locally
 
