@@ -1,14 +1,12 @@
 # Music Player
 
-A simple, responsive YouTube playlist player built with a dependency-free Node.js backend and browser frontend. The player screen uses the supplied music background and control icons; a separate playlist screen opens from the playlist button and returns to the player with Back.
+A simple, responsive, audio-only player for direct audio links. The player screen uses the supplied music background and control icons. Open the playlist screen to add licensed audio links; select a song to play it, then use Back to return to the player.
 
 ## Run locally
 
 1. Install Node.js 18 or newer.
 2. Run `npm start` in this folder.
 3. Open [http://localhost:3000](http://localhost:3000).
-4. Paste a public YouTube playlist URL.
+4. Open the playlist button, add a direct URL to an audio file you own or are licensed to play, then select the song from the list.
 
-The official YouTube embedded player works without an API key. To also show every track and its thumbnail in the custom queue, enable **YouTube Data API v3** in a Google Cloud project, copy `.env.example` to `.env`, and set `YOUTUBE_API_KEY` to your key. Restart the server after changing `.env`.
-
-The backend uses the YouTube Data API to read public playlist metadata. Playback stays in YouTube's embedded player; audio is not downloaded, extracted, or re-hosted. Some videos may be unavailable because of their privacy, region, or embedding settings.
+Links must be directly playable audio files served over HTTP or HTTPS. YouTube watch, playlist, and streaming-page links are not direct audio file URLs. The player uses the browser's audio playback and does not download or host external tracks.
