@@ -85,6 +85,12 @@ function makeEmbedUrl(track) {
     enablejsapi: "1",
     origin: window.location.origin,
   });
+  if (repeatEnabled) {
+    params.set("loop", "1");
+    params.set("playlist", playlist?.kind === "radio-mix" || playlist?.embedPlaylist
+      ? playlist.id
+      : track.id);
+  }
   if (playlist?.kind === "radio-mix" || playlist?.embedPlaylist) {
     params.set("list", playlist.id);
     return `https://www.youtube-nocookie.com/embed/videoseries?${params}`;
@@ -316,6 +322,8 @@ repeatButton.addEventListener("click", () => {
   repeatEnabled = !repeatEnabled;
   repeatButton.setAttribute("aria-pressed", String(repeatEnabled));
   repeatButton.setAttribute("aria-label", `Repeat ${repeatEnabled ? "on" : "off"}`);
+  const track = playlist?.tracks[currentIndex];
+  if (track) setEmbed(track);
 });
 
 playButton.addEventListener("click", () => {
