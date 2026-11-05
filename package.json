@@ -2,7 +2,7 @@
   "name": "nocturne-music-studio",
   "version": "1.0.0",
   "private": true,
-  "description": "A neon YouTube playlist listening room",
+  "description": "An audio-only player for authorized direct audio sources",
   "scripts": {
     "start": "node server.js",
     "test": "node --test"
