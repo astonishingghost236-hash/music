@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#09060f">
     <meta name="description" content="Play direct audio streams from sources you are allowed to use.">
     <title>Music Player</title>
-    <link rel="stylesheet" href="/styles.css?v=7">
+    <link rel="stylesheet" href="/styles.css?v=8">
     <script src="/audio-utils.js?v=1" defer></script>
-    <script src="/app.js?v=8" defer></script>
+    <script src="/app.js?v=9" defer></script>
   </head>
   <body>
     <main class="app">
@@ -24,6 +24,9 @@
         <div class="player-content">
           <div class="player-stage" id="player-stage">
             <div class="stage-cover" id="stage-cover" role="img" aria-label="Album artwork"></div>
+            <div class="youtube-player" id="youtube-player-container" hidden>
+              <div id="youtube-player"></div>
+            </div>
           </div>
           <audio id="audio-player" preload="none"></audio>
 
@@ -35,10 +38,12 @@
               <strong id="now-title">Choose a playlist</strong>
               <span id="now-artist">Your music will appear here</span>
             </div>
-            <span class="audio-label">AUDIO</span>
+            <span class="audio-label" id="source-label">AUDIO</span>
           </div>
 
           <p class="player-message" id="player-message" role="status" aria-live="polite"></p>
+          <p class="quality-note" id="quality-note" hidden>Video quality settings are available in the YouTube player menu.</p>
+          <button class="video-toggle" id="video-toggle" type="button" hidden disabled>Hide video</button>
 
           <div class="player-controls" aria-label="Playback controls">
             <button class="icon-button secondary-control" id="shuffle-button" type="button" aria-label="Shuffle off" aria-pressed="false">
@@ -50,6 +55,9 @@
             <button class="play-button" id="play-button" type="button" aria-label="Play" disabled>
               <span class="sprite-icon icon-play" aria-hidden="true"></span>
               <span class="pause-icon" aria-hidden="true"><i></i><i></i></span>
+            </button>
+            <button class="icon-button secondary-control stop-control" id="stop-button" type="button" aria-label="Stop" disabled>
+              <span class="stop-icon" aria-hidden="true"></span>
             </button>
             <button class="icon-button secondary-control" id="next-button" type="button" aria-label="Next track" disabled>
               <span class="sprite-icon icon-next" aria-hidden="true"></span>
@@ -70,10 +78,10 @@
 
         <div class="list-content">
           <h1 id="playlist-title">Your playlist</h1>
-          <p class="list-description">Add a direct audio URL that you own or have permission to play. YouTube video links are not supported.</p>
+          <p class="list-description">Paste a YouTube video or playlist link, or a direct audio URL that you own or have permission to play.</p>
           <form class="playlist-form" id="playlist-form">
             <label class="sr-only" for="audio-url">Direct audio URL</label>
-            <input id="audio-url" name="url" type="url" placeholder="https://example.com/song.mp3" autocomplete="url" required>
+            <input id="audio-url" name="url" type="url" placeholder="YouTube video/playlist or direct audio URL" autocomplete="url" required>
             <button id="load-button" type="submit"><span>Add audio</span></button>
             <label class="sr-only" for="track-title">Song title (optional)</label>
             <input class="track-title-input" id="track-title" name="title" type="text" maxlength="100" placeholder="Song title (optional)" autocomplete="off">

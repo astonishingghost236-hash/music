@@ -1,19 +1,50 @@
 const assert = require("node:assert/strict");
 const { test } = require("node:test");
-const { parseAudioUrl, titleFromUrl } = require("../public/audio-utils");
+const { parseAudioUrl, parseYouTubeUrl, titleFromUrl } = require("../public/audio-utils");
 
 test("accepts direct HTTP and HTTPS audio source URLs", () => {
   assert.equal(parseAudioUrl("https://cdn.example.com/audio/song.mp3"), "https://cdn.example.com/audio/song.mp3");
   assert.equal(parseAudioUrl("http://radio.example.com/live"), "http://radio.example.com/live");
 });
 
-test("rejects YouTube and googlevideo URLs", () => {
+test("parses YouTube video, short, embed, and playlist URLs", () => {
+  assert.deepEqual(parseYouTubeUrl("https://www.youtube.com/watch?v=EpdsVO9pt9g"), {
+    type: "video",
+    videoId: "EpdsVO9pt9g",
+  });
+  assert.deepEqual(parseYouTubeUrl("https://youtu.be/EpdsVO9pt9g?t=30"), {
+    type: "video",
+    videoId: "EpdsVO9pt9g",
+  });
+  assert.deepEqual(parseYouTubeUrl("https://www.youtube.com/shorts/EpdsVO9pt9g"), {
+    type: "video",
+    videoId: "EpdsVO9pt9g",
+  });
+  assert.deepEqual(parseYouTubeUrl("https://www.youtube.com/playlist?list=PL1234567890"), {
+    type: "playlist",
+    playlistId: "PL1234567890",
+    videoId: null,
+  });
+  assert.deepEqual(parseYouTubeUrl("https://www.youtube.com/watch?v=EpdsVO9pt9g&list=PL1234567890"), {
+    type: "playlist",
+    playlistId: "PL1234567890",
+    videoId: "EpdsVO9pt9g",
+  });
+});
+
+test("rejects malformed YouTube links and ignores non-YouTube URLs", () => {
+  assert.equal(parseYouTubeUrl("https://cdn.example.com/song.mp3"), null);
+  assert.throws(() => parseYouTubeUrl("https://www.youtube.com/channel/music"), /YouTube video ya playlist/);
+  assert.throws(() => parseYouTubeUrl("https://www.youtube.com/playlist?list=bad%20id"), /Valid YouTube playlist/);
+});
+
+test("rejects YouTube and googlevideo URLs as direct audio sources", () => {
   for (const url of [
     "https://www.youtube.com/watch?v=EpdsVO9pt9g",
     "https://youtu.be/EpdsVO9pt9g",
     "https://r1.googlevideo.com/audio",
   ]) {
-    assert.throws(() => parseAudioUrl(url), /YouTube video links supported nahi hain/);
+    assert.throws(() => parseAudioUrl(url), /YouTube link ke liye YouTube player/);
   }
 });
 
