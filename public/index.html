@@ -7,9 +7,9 @@
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <meta name="description" content="Play YouTube videos, playlists, and authorized direct audio sources.">
     <title>Music Player</title>
-    <link rel="stylesheet" href="/styles.css?v=8">
+    <link rel="stylesheet" href="/styles.css?v=9">
     <script src="/audio-utils.js?v=1" defer></script>
-    <script src="/app.js?v=10" defer></script>
+    <script src="/app.js?v=11" defer></script>
   </head>
   <body>
     <main class="app">
@@ -27,6 +27,10 @@
             <div class="stage-cover" id="stage-cover" role="img" aria-label="Album artwork"></div>
             <div class="youtube-player" id="youtube-player-container" hidden>
               <div id="youtube-player"></div>
+            </div>
+            <div class="youtube-fallback" id="youtube-fallback" hidden>
+              <p>This video can't play in the embedded player.</p>
+              <a id="youtube-fallback-link" href="https://www.youtube.com" target="_blank" rel="noopener">Continue on YouTube</a>
             </div>
           </div>
           <audio id="audio-player" preload="none"></audio>

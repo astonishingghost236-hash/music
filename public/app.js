@@ -13,6 +13,8 @@ const queue = document.querySelector("#queue-list");
 const trackCount = document.querySelector("#track-count");
 const audioPlayer = document.querySelector("#audio-player");
 const youtubePlayerContainer = document.querySelector("#youtube-player-container");
+const youtubeFallback = document.querySelector("#youtube-fallback");
+const youtubeFallbackLink = document.querySelector("#youtube-fallback-link");
 const stageCover = document.querySelector("#stage-cover");
 const sourceLabel = document.querySelector("#source-label");
 const qualityNote = document.querySelector("#quality-note");
@@ -101,28 +103,20 @@ function loadYouTubeApi() {
   return youtubeApiPromise;
 }
 
-function showYouTubeError(code) {
-  const messages = {
-    2: "YouTube link mein video ID valid nahi hai.",
-    5: "YouTube playback browser ya network mein fail hua. Video ko YouTube par khol kar check karein.",
-    100: "YouTube video nahi mila, private hai, ya remove ho chuka hai.",
-    101: "Video owner ne is video ko embedded player mein chalane ki permission nahi di.",
-    150: "Video owner ne is video ko embedded player mein chalane ki permission nahi di.",
-    153: "YouTube player ko page origin nahi mila. Website ko localhost ya HTTPS se kholein.",
-  };
-  const message = messages[code] || "YouTube video load nahi ho paya.";
-  const openLink = document.createElement("a");
-  openLink.href = currentTrack?.type === "youtube-playlist"
+function showYouTubeFallback() {
+  if (activeMode !== "youtube" || !currentTrack) return;
+  youtubePlayerContainer.hidden = true;
+  youtubeFallback.hidden = false;
+  youtubeFallbackLink.href = currentTrack.type === "youtube-playlist"
     ? `https://www.youtube.com/playlist?list=${encodeURIComponent(currentTrack.playlistId)}`
     : `https://www.youtube.com/watch?v=${encodeURIComponent(currentTrack?.videoId || "")}`;
-  openLink.target = "_blank";
-  openLink.rel = "noopener";
-  openLink.textContent = "YouTube par kholen";
-  playerMessage.replaceChildren(
-    document.createTextNode(`${message} (Error ${code}). `),
-    openLink
-  );
-  playerMessage.classList.remove("success");
+  qualityNote.hidden = true;
+  videoToggleButton.hidden = true;
+  playButton.disabled = true;
+  stopButton.disabled = true;
+  previousButton.disabled = true;
+  nextButton.disabled = true;
+  showMessage(playerMessage, "");
   setPlaying(false);
 }
 
@@ -134,7 +128,7 @@ function updateYouTubeTrackInfo() {
 }
 
 function handleYouTubeStateChange(event) {
-  if (activeMode !== "youtube") return;
+  if (activeMode !== "youtube" || !youtubeFallback.hidden) return;
 
   if (event.data === 1) {
     setPlaying(true);
@@ -184,7 +178,7 @@ function getYouTubePlayer() {
             resolve(youtubePlayer);
           },
           onStateChange: handleYouTubeStateChange,
-          onError: (event) => showYouTubeError(event.data),
+          onError: showYouTubeFallback,
         },
       });
     } catch (error) {
@@ -205,6 +199,7 @@ function displayAudioTrack(track, index) {
   sourceLabel.textContent = "AUDIO";
   videoToggleButton.hidden = true;
   setYouTubeVideoVisible(false);
+  youtubeFallback.hidden = true;
   stageCover.hidden = false;
   audioPlayer.pause();
   audioPlayer.src = track.url;
@@ -230,6 +225,7 @@ async function displayYouTubeTrack(track, index) {
   audioPlayer.pause();
   audioPlayer.removeAttribute("src");
   audioPlayer.load();
+  youtubeFallback.hidden = true;
   setYouTubeVideoVisible(true);
   videoToggleButton.hidden = false;
   videoToggleButton.disabled = true;
@@ -261,8 +257,8 @@ async function displayYouTubeTrack(track, index) {
       pendingPlaylistVideoId = null;
       player.loadVideoById(track.videoId);
     }
-  } catch (error) {
-    showMessage(playerMessage, error.message || "YouTube player load nahi ho paya.");
+  } catch {
+    showYouTubeFallback();
   }
 }
 
