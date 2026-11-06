@@ -104,13 +104,25 @@ function loadYouTubeApi() {
 function showYouTubeError(code) {
   const messages = {
     2: "YouTube link mein video ID valid nahi hai.",
-    5: "YouTube video is browser mein play nahi ho paya.",
+    5: "YouTube playback browser ya network mein fail hua. Video ko YouTube par khol kar check karein.",
     100: "YouTube video nahi mila, private hai, ya remove ho chuka hai.",
     101: "Video owner ne is video ko embedded player mein chalane ki permission nahi di.",
     150: "Video owner ne is video ko embedded player mein chalane ki permission nahi di.",
     153: "YouTube player ko page origin nahi mila. Website ko localhost ya HTTPS se kholein.",
   };
-  showMessage(playerMessage, messages[code] || "YouTube video load nahi ho paya.");
+  const message = messages[code] || "YouTube video load nahi ho paya.";
+  const openLink = document.createElement("a");
+  openLink.href = currentTrack?.type === "youtube-playlist"
+    ? `https://www.youtube.com/playlist?list=${encodeURIComponent(currentTrack.playlistId)}`
+    : `https://www.youtube.com/watch?v=${encodeURIComponent(currentTrack?.videoId || "")}`;
+  openLink.target = "_blank";
+  openLink.rel = "noopener";
+  openLink.textContent = "YouTube par kholen";
+  playerMessage.replaceChildren(
+    document.createTextNode(`${message} (Error ${code}). `),
+    openLink
+  );
+  playerMessage.classList.remove("success");
   setPlaying(false);
 }
 
